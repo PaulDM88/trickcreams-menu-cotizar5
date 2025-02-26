@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COTIZAR</title>
+
+  <!-- Fuentes de Google (opcional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== RESETEO GENERAL ====== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(120deg, #ffe6f2 20%, #ffccde 80%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      border: 3px solid #ff66b2;
+      transition: transform 0.3s ease;
+    }
+    .container:hover {
+      transform: scale(1.01);
+    }
+
+    /* ====== TÍTULOS ====== */
+    h1 {
+      color: #ff3385;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 36px;
+      margin-bottom: 5px;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+    }
+    h2 {
+      color: #ff66b2;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 24px;
+      margin: 15px 0 10px;
+    }
+
+    /* ====== MENÚS ====== */
+    .menu-items {
+      margin: 15px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .menu-item {
+      background-color: #ffe6f2;
+      border-radius: 10px;
+      padding: 10px;
+      transition: box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .menu-item:hover {
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .menu-item label {
+      font-size: 14px;
+      color: #d81b60;
+      line-height: 1.2;
+      text-align: center;
+      white-space: normal;
+      font-weight: 500;
+    }
+    .description {
+      font-size: 13px;
+      color: #444;
+      margin: 3px 0;
+      line-height: 1.2;
+    }
+
+    /* Controles (precio, cantidad, toppings [cremas], agregar) */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 3px;
+    }
+    select {
+      padding: 6px;
+      border-radius: 8px;
+      border: 2px solid #ff3385;
+      background-color: #fff0f5;
+      font-size: 12px;
+      color: #ff3385;
+      outline: none;
+      cursor: pointer;
+    }
+    .btn-toppings, .btn-add {
+      background: linear-gradient(to right, #ff3385, #ff66b2);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: transform 0.2s, background 0.3s;
+      outline: none;
+    }
+    .btn-toppings:hover, .btn-add:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(to right, #cc005f, #ff3385);
+    }
+
+    /* Panel Toppings (solo en cremas) */
+    .toppings-panel {
+      margin-top: 5px;
+      display: none;
+      background-color: #fff0f5;
+      border: 2px solid #ff3385;
+      border-radius: 8px;
+      padding: 8px;
+      width: 100%;
+      max-width: 250px;
+    }
+    .toppings-panel h4 {
+      font-size: 14px;
+      color: #d81b60;
+      margin-bottom: 4px;
+    }
+    .toppings-panel label {
+      display: block;
+      text-align: left;
+      color: #d81b60;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+    .toppings-panel input[type="checkbox"] {
+      margin-right: 4px;
+      cursor: pointer;
+    }
+
+    /* ====== SECCIÓN PEDIDO ====== */
+    .pedido {
+      margin-top: 20px;
+      padding: 15px;
+      border-top: 3px solid #ff3385;
+      background-color: #fff0f5;
+      border-radius: 10px;
+    }
+    .pedido h3 {
+      color: #d81b60;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    .pedido p {
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .pedido strong {
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    #lista-pedido {
+      margin-bottom: 10px;
+    }
+
+    /* Total vistoso */
+    #total {
+      color: #d81b60;
+      background-color: #ffd6ed;
+      padding: 6px 10px;
+      border-radius: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      margin-left: 8px;
+      border: 2px solid #ff66b2;
+      display: inline-block;
+    }
+
+    /* Botones en pedido */
+    .btn-remove, .btn-reset {
+      background: linear-gradient(to right, #ff3385, #ff66b2);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: transform 0.2s, background 0.3s;
+      outline: none;
+      margin: 5px;
+    }
+    .btn-remove:hover, .btn-reset:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(to right, #cc005f, #ff3385);
+    }
+
+    /* Nombre del cliente */
+    .label-nombre {
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+      font-size: 14px;
+      color: #d81b60;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    #nombreCliente {
+      width: 100%;
+      max-width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 2px solid #ff3385;
+      background-color: #fff0f5;
+      font-size: 14px;
+      color: #ff3385;
+      outline: none;
+    }
+
+    /* Dirección de entrega */
+    .direccion-label {
+      display: block;
+      text-align: left;
+      margin: 10px 0 5px;
+      font-size: 14px;
+      color: #d81b60;
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 0.5px;
+    }
+    #direccionEntrega {
+      width: 100%;
+      max-width: 100%;
+      height: 60px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 2px solid #ff3385;
+      background-color: #fff0f5;
+      font-size: 14px;
+      color: #ff3385;
+      outline: none;
+      resize: vertical;
+    }
+
+    /* Mensaje final y botón WhatsApp */
+    .footer-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #d81b60;
+      line-height: 1.3;
+      font-family: 'Poppins', sans-serif;
+    }
+    .footer-text span {
+      display: block;
+      margin-bottom: 3px;
+    }
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #25D366;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 20px;
+      transition: transform 0.2s, background 0.3s;
+      outline: none;
+      margin-top: 10px;
+    }
+    .btn-whatsapp:hover {
+      transform: translateY(-2px);
+      background-color: #20b354;
+    }
+    .whatsapp-icon {
+      width: 18px; 
+      height: 18px; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- TÍTULO PRINCIPAL -->
+    <h1>COTIZAR</h1>
+
+    <!-- Menú de Cremas (con Toppings) -->
+    <h2>Menú de Cremas</h2>
+    <div id="menu-cremas" class="menu-items"></div>
+
+    <!-- Menú de Café (sin Toppings) -->
+    <h2>Menú de Café</h2>
+    <div id="menu-cafe" class="menu-items"></div>
+
+    <!-- Bebidas que Conquistan (sin Toppings) -->
+    <h2>Bebidas que Conquistan</h2>
+    <div id="menu-bebidas" class="menu-items"></div>
+
+    <!-- SECCIÓN DE PEDIDO -->
+    <div class="pedido">
+      <button class="btn-remove" onclick="quitarUltimoPedido()">Quitar Pedido</button>
+      <button class="btn-reset" onclick="resetearPedidos()">Reiniciar Pedidos</button>
+
+      <h3>Pedidos por entregar</h3>
+      <div id="lista-pedido"></div>
+      <p>
+        <strong>Total:</strong> 
+        <span id="total">$0.00</span>
+      </p>
+
+      <!-- Nombre y dirección -->
+      <label for="nombreCliente" class="label-nombre">Tu nombre:</label>
+      <input type="text" id="nombreCliente" placeholder="Ingresa tu nombre...">
+
+      <label for="direccionEntrega" class="direccion-label">Dirección de entrega:</label>
+      <textarea id="direccionEntrega" rows="2" maxlength="200" placeholder="Ingresa tu dirección (hasta ~30 palabras)..."></textarea>
+
+      <!-- Mensaje final -->
+      <div class="footer-text">
+        <span>Haz clic en el botón verde de WhatsApp para enviarnos tu pedido</span>
+        <span>¡y con gusto prepararemos tu menú premium!</span>
+      </div>
+
+      <!-- Botón WhatsApp -->
+      <button class="btn-whatsapp" onclick="enviarWhatsApp()">
+        <svg class="whatsapp-icon" viewBox="0 0 32 32">
+          <path fill="currentColor" d="M19.11 2.002h-.023c-3.273 0-6.368 1.275-8.699 3.606-2.332 2.332-3.605 5.427-3.605 8.698 0 1.717.359 3.397 1.066 4.968l-1.11 4.073 4.175-1.095c1.524.681 3.176 1.03 4.87 1.03 3.273 0 6.368-1.275 8.699-3.606 2.332-2.332 3.606-5.427 3.606-8.699 0-3.273-1.274-6.368-3.606-8.699-2.33-2.331-5.426-3.604-8.698-3.604zm5.228 18.115c-.447 1.267-2.208 2.333-3.023 2.48-.815.146-1.777.208-2.877-.146-.663-.21-1.516-.512-2.593-.999-4.563-2.004-7.53-6.976-7.77-7.317-.24-.341-1.85-2.469-1.85-4.711 0-2.242 1.146-3.336 1.554-3.789.407-.451 1.082-.66 1.814-.66.22 0 .418.011.595.02.524.023.784.053 1.13.865.186.442.628 1.525.857 2.064.153.369.272.633.191.866-.072.215-.307.338-.53.512-.272.221-.578.465-.807.745-.248.303-.52.63-.223 1.179.297.55 1.317 2.166 2.828 3.505 1.944 1.738 3.591 2.278 4.141 2.475.55.198.874.165 1.201-.05.379-.263.737-.683 1.146-1.18.305-.384.697-.431 1.117-.286.424.145 2.66 1.252 2.665 1.474.009.221-.009.429-.456 1.696z"/>
+        </svg>
+        Enviar por WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* 1) Cambia ESTE número a tu WhatsApp sin “+” */
+    const phoneNumber = "593999999999";
+
+    /* 2) Toppings (solo en cremas) */
+    const toppingsCremas = [
+      "Almendras", "Nueces", "Galak", "Tango", "Barquillo",
+      "Chocolate", "Masmelos", "Bombón", "Guipitos", "Gomitas",
+      "Chispitas chocolate blanca", "Leche en polvo", "Galletas integrales"
+    ];
+
+    /* 3) Productos con descripciones (ingredientes) */
+    const productos = {
+      /* Menú de Cremas */
+      cremas: [
+        {
+          nombre: "Capas crema gourmet - fresa - oreo",
+          desc: "Capa de crema con fresas y galleta Oreo.",
+          precios: { Supremo: 3, Ligero: 2, Mini: 1 }
+        },
+        {
+          nombre: "Capas crema gourmet - durazno - oreo",
+          desc: "Crema suave con durazno y crujiente Oreo.",
+          precios: { Supremo: 3, Ligero: 2, Mini: 1 }
+        },
+        {
+          nombre: "Capas crema gourmet - fresa - durazno - oreo",
+          desc: "Deliciosa mezcla de fresa, durazno y Oreo.",
+          precios: { Supremo: 3, Ligero: 2, Mini: 1 }
+        },
+        {
+          nombre: "Capas crema gourmet - chocolate - fresa - durazno - galleta integral - oreo",
+          desc: "Chocolate, fresas, durazno, galleta integral y Oreo.",
+          precios: { Supremo: 3.5, Ligero: 2.5, Mini: 1.5 }
+        },
+        {
+          nombre: "Capas crema gourmet - chocolate - fresa - galleta",
+          desc: "Base de chocolate con fresa fresca y galleta.",
+          precios: { Supremo: 3.5, Ligero: 2.5, Mini: 1.5 }
+        }
+      ],
+      /* Menú de Café */
+      cafe: [
+        {
+          nombre: "Latte Caramelo Dorado",
+          desc: "Café, leche, jarabe de caramelo, hielo y pizca de azúcar morena.",
+          precios: { Descremada: 2.25, Almendra: 3 }
+        },
+        {
+          nombre: "Cappuccino Express",
+          desc: "Espuma cremosa y un toque de cacao, refrescante y deliciosa.",
+          precios: { Descremada: 2.5, Almendra: 3.5 }
+        },
+        {
+          nombre: "Frappé de Café Clásico",
+          desc: "Refrescante y delicioso: equilibrio de café, leche y crema batida.",
+          precios: { Descremada: 2.5, Almendra: 3.5 }
+        },
+        {
+          nombre: "Espresso Vainilla",
+          desc: "Café, leche, jarabe de vainilla e hielo.",
+          precios: { Descremada: 2.25, Almendra: 3 }
+        }
+      ],
+      /* Bebidas que Conquistan */
+      bebidas: [
+        {
+          nombre: "Mocachino Vainilla",
+          desc: "Café, leche, vainilla y chocolate líquido, hielo coronado con crema batida.",
+          precios: { Descremada: 2.75, Almendra: 3.5 }
+        },
+        {
+          nombre: "Fresa Latte Love",
+          desc: "Café con fresas naturales, chocolate líquido y hielo triturado.",
+          precios: { Descremada: 2.75, Almendra: 3.5 }
+        },
+        {
+          nombre: "Smoothie Tropical",
+          desc: "Frutas tropicales con leche. ¡Refrescante y delicioso!",
+          precios: { Descremada: 2.5, Almendra: 3.25 }
+        },
+        {
+          nombre: "Banana Latte Café",
+          desc: "Café, leche, guineo, cacao y hielo triturado.",
+          precios: { Descremada: 2.25, Almendra: 3 }
+        }
+      ]
+    };
+
+    /* Variable para sumar total */
+    let totalPedido = 0;
+
+    /* Al cargar, generamos los menús */
+    window.onload = () => {
+      generarMenus();
+    };
+
+    function generarMenus() {
+      /* Recorremos cada categoría: cremas, cafe, bebidas */
+      for (let categoria in productos) {
+        const contenedor = document.getElementById(`menu-${categoria}`);
+        if (!contenedor) continue; // si no existe, salta
+
+        contenedor.innerHTML = ""; // limpiar
+
+        productos[categoria].forEach((prod, index) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.classList.add("menu-item");
+
+          // Nombre
+          const label = document.createElement("label");
+          label.textContent = prod.nombre;
+          itemDiv.appendChild(label);
+
+          // Descripción/ingredientes
+          if (prod.desc) {
+            const descP = document.createElement("p");
+            descP.classList.add("description");
+            descP.textContent = prod.desc;
+            itemDiv.appendChild(descP);
+          }
+
+          // Controles (precio, cantidad, toppings si cremas, add)
+          const controlsDiv = document.createElement("div");
+          controlsDiv.classList.add("controls");
+
+          // Select precio
+          const selectPrecio = document.createElement("select");
+          for (let opcion in prod.precios) {
+            const optPrecio = document.createElement("option");
+            optPrecio.value = prod.precios[opcion];
+            optPrecio.textContent = `${opcion} - $${prod.precios[opcion].toFixed(2)}`;
+            selectPrecio.appendChild(optPrecio);
+          }
+
+          // Select cantidad
+          const selectCantidad = document.createElement("select");
+          for (let i = 1; i <= 10; i++) {
+            const optCant = document.createElement("option");
+            optCant.value = i;
+            optCant.textContent = `Cant: ${i}`;
+            selectCantidad.appendChild(optCant);
+          }
+
+          let toppingsPanel = null;
+
+          // Si es cremas, creamos botón Toppings (entre cantidad y el "Agregar Pedido")
+          if (categoria === "cremas") {
+            const toppingsBtn = document.createElement("button");
+            toppingsBtn.textContent = "Toppings";
+            toppingsBtn.classList.add("btn-toppings");
+
+            const panelId = `toppings-panel-${categoria}-${index}`;
+            toppingsBtn.onclick = () => toggleToppingsPanel(panelId);
+
+            // Creamos subpanel
+            toppingsPanel = document.createElement("div");
+            toppingsPanel.classList.add("toppings-panel");
+            toppingsPanel.id = panelId;
+
+            const panelTitle = document.createElement("h4");
+            panelTitle.textContent = "Elige hasta 3 Toppings";
+            toppingsPanel.appendChild(panelTitle);
+
+            // Checkboxes Toppings
+            toppingsCremas.forEach((t) => {
+              const labelTop = document.createElement("label");
+              const chk = document.createElement("input");
+              chk.type = "checkbox";
+              chk.value = t;
+              chk.onchange = () => limitToppings(panelId, chk);
+              labelTop.appendChild(chk);
+              labelTop.append(" " + t);
+              toppingsPanel.appendChild(labelTop);
+            });
+
+            controlsDiv.appendChild(selectPrecio);
+            controlsDiv.appendChild(selectCantidad);
+            controlsDiv.appendChild(toppingsBtn); // Botón Toppings va entre la cantidad y el botón "Agregar"
+          } else {
+            // Café y Bebidas (sin toppings)
+            controlsDiv.appendChild(selectPrecio);
+            controlsDiv.appendChild(selectCantidad);
+          }
+
+          // Botón Agregar Pedido
+          const addBtn = document.createElement("button");
+          addBtn.textContent = "Agregar Pedido";
+          addBtn.classList.add("btn-add");
+          addBtn.onclick = () => {
+            const precioUnit = parseFloat(selectPrecio.value);
+            const cant = parseInt(selectCantidad.value);
+            // Obtenemos la etiqueta textual (Supremo, Ligero, etc. o Descremada, Almendra, etc.)
+            const selectedPriceLabel = selectPrecio.options[selectPrecio.selectedIndex].textContent.split(" - $")[0];
+
+            let chosenToppings = [];
+            if (categoria === "cremas" && toppingsPanel) {
+              chosenToppings = getToppingsSeleccionados(toppingsPanel.id);
+              clearToppingsPanel(toppingsPanel.id);
+            }
+
+            agregarPedido(prod.nombre, prod.desc, selectedPriceLabel, precioUnit, cant, chosenToppings);
+          };
+
+          controlsDiv.appendChild(addBtn);
+          itemDiv.appendChild(controlsDiv);
+          if (toppingsPanel) itemDiv.appendChild(toppingsPanel);
+
+          contenedor.appendChild(itemDiv);
+        });
+      }
+    }
+
+    /* Mostrar/ocultar toppings panel */
+    function toggleToppingsPanel(panelId) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+      if (panel.style.display === "" || panel.style.display === "none") {
+        panel.style.display = "block";
+      } else {
+        panel.style.display = "none";
+      }
+    }
+
+    /* Limitar a 3 toppings */
+    function limitToppings(panelId, currentChk) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+      const marcados = panel.querySelectorAll('input[type="checkbox"]:checked');
+      if (marcados.length > 3) {
+        currentChk.checked = false;
+        alert("Solo puedes elegir 3 toppings como máximo.");
+      }
+    }
+
+    /* Obtener toppings */
+    function getToppingsSeleccionados(panelId) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return [];
+      const checks = panel.querySelectorAll('input[type="checkbox"]:checked');
+      return [...checks].map(c => c.value);
+    }
+
+    /* Limpiar toppings panel */
+    function clearToppingsPanel(panelId) {
+      const panel = document.getElementById(panelId);
+      if (!panel) return;
+      const checks = panel.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(c => c.checked = false);
+      panel.style.display = "none";
+    }
+
+    /* Agregar producto al pedido */
+    function agregarPedido(nombre, desc, sizeOrType, precioUnit, cant, toppingsArr) {
+      const subtotal = precioUnit * cant;
+      const listaPedido = document.getElementById("lista-pedido");
+
+      // Construimos el texto
+      // Ej: "Capas crema ... [Supremo] x2 - $6.00 [Ingredientes: ...] [Toppings: ...]"
+      let itemText = `${nombre} [${sizeOrType}] x${cant} - $${subtotal.toFixed(2)}`;
+      if (desc) {
+        itemText += ` [Ingredientes: ${desc}]`;
+      }
+      if (toppingsArr.length > 0) {
+        itemText += ` [Toppings: ${toppingsArr.join(", ")}]`;
+      }
+
+      const item = document.createElement("p");
+      item.textContent = itemText;
+      listaPedido.appendChild(item);
+
+      totalPedido += subtotal;
+      document.getElementById("total").textContent = `$${totalPedido.toFixed(2)}`;
+    }
+
+    /* Quitar el último item */
+    function quitarUltimoPedido() {
+      const listaPedido = document.getElementById("lista-pedido");
+      if (listaPedido.lastChild) {
+        // Sacar precio
+        const precioTexto = listaPedido.lastChild.textContent.match(/\$(\d+\.\d+)/);
+        if (precioTexto) {
+          const precio = parseFloat(precioTexto[1]);
+          totalPedido -= precio;
+          document.getElementById("total").textContent = `$${totalPedido.toFixed(2)}`;
+        }
+        listaPedido.removeChild(listaPedido.lastChild);
+      }
+    }
+
+    /* Reiniciar todo */
+    function resetearPedidos() {
+      document.getElementById("lista-pedido").innerHTML = "";
+      totalPedido = 0;
+      document.getElementById("total").textContent = "$0.00";
+      document.getElementById("nombreCliente").value = "";
+      document.getElementById("direccionEntrega").value = "";
+    }
+
+    /* Enviar a WhatsApp, incluyendo ingredientes y toppings */
+    function enviarWhatsApp() {
+      const items = document.getElementById("lista-pedido").children;
+      let pedidoTexto = "¡Hola! Me gustaría cotizar:\n";
+
+      for (let i = 0; i < items.length; i++) {
+        pedidoTexto += "- " + items[i].textContent + "\n";
+      }
+
+      const direccion = document.getElementById("direccionEntrega").value.trim();
+      if (direccion) {
+        pedidoTexto += `\nDirección: ${direccion}\n`;
+      }
+
+      const nombre = document.getElementById("nombreCliente").value.trim();
+      if (nombre) {
+        pedidoTexto += `A nombre de: ${nombre}\n`;
+      }
+
+      pedidoTexto += `\nTotal: $${totalPedido.toFixed(2)}\n`;
+      pedidoTexto += "\n¡Gracias! Quedo atento/a a su confirmación.";
+
+      const url = `https://api.whatsapp.com/send?phone=${+593968789477}&text=${encodeURIComponent(pedidoTexto)}`;
+      window.open(url, "_blank");
+    }
+  </script>
+</body>
+</html>
